@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from PIL import Image
 import streamlit as st
-
+import tempfile, os
 from models.explex_net import ExplexNet
 from helpers.decode_video import sample_frames, frame_diff_stack, get_video_info
 from helpers.audio import extract_audio_array, log_mel_spectrogram
@@ -39,7 +39,7 @@ if video_file is not None:
     # Save uploaded file to a temp buffer for MoviePy
     with st.spinner("Analyzing (this runs once, then displays results)…"):
         # MoviePy needs a real path; write to temp
-        tmp_path = f"/tmp/{int(time.time())}_clip.mp4"
+        tmp_path = os.path.join(tempfile.gettempdir(), "clip.mp4")
         with open(tmp_path, 'wb') as f:
             f.write(video_file.getbuffer())
 

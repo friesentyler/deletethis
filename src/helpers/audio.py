@@ -14,7 +14,16 @@ def extract_audio_array(path: str, sr: int = 16000) -> np.ndarray:
     if audioclip is None:
         return np.zeros(1, dtype=np.float32)
     # to_soundarray can be large; for short clips (classroom) it's okay
-    audio = audioclip.to_soundarray(fps=sr)  # shape [T, channels] at target fps
+    # Fix for numpy compatibility: convert generator to list
+    try:
+        audio = audioclip.to_soundarray(fps=sr)  # shape [T, channels] at target fps
+    except TypeError:
+        # Fallback for newer numpy versions that require sequence types
+        chunks = list(audioclip.iter_chunks(fps=sr, quantize=True, nbytes=2, chunksize=2000))
+        audio = np.vstack(chunks) if chunks else np.zeros((1, 2), dtype=np.int16)
+        # Convert from int16 to float32 in range [-1, 1]
+        audio = audio.astype(np.float32) / 32768.0
+    
     if audio.ndim == 2:
         audio = audio.mean(axis=1)
     return audio.astype(np.float32)
