@@ -6,7 +6,8 @@ pandas
 scikit-learn
 streamlit
 opencv-python-headless
-moviepy>=2.0.0
+moviepy==1.0.3
+imageio-ffmpeg
 librosa
 soundfile
 matplotlib
